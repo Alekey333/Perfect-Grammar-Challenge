@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard | Perfect Quiz</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -11,6 +11,7 @@
         <div class="glass-card wide">
             <h1>Class Statistics 📊</h1>
             <canvas id="resultsChart" style="max-height: 250px; margin-bottom: 20px;"></canvas>
+            
             <div class="admin-grid">
                 <div class="table-scroll">
                     <h3>Top Students</h3>
@@ -20,35 +21,61 @@
                     </table>
                 </div>
                 <div class="answers-review">
-                    <h3>Correct Keys 🔑</h3>
+                    <h3>Correct Keys (Present/Nouns) 🔑</h3>
                     <ul id="correct-answers-list"></ul>
                 </div>
             </div>
-            <button class="btn-primary" onclick="window.location.href='index.html'">Back to Game</button>
-            <button class="btn-danger" onclick="localStorage.removeItem('perfectGame'); location.reload();" style="margin-top:10px; background:#ef4444;">Reset All Data</button>
+
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn-primary" onclick="window.location.href='index.html'" style="flex: 2;">Back to Game</button>
+                <button class="btn-danger" onclick="clearData()" style="flex: 1; background: #ef4444;">Reset Data</button>
+            </div>
         </div>
     </div>
+
     <script>
         window.onload = () => {
             const results = JSON.parse(localStorage.getItem('perfectGame')) || [];
             const tbody = document.getElementById('table-body');
+            
+            // Cargar tabla de puntajes
             tbody.innerHTML = results.sort((a,b) => b.score - a.score)
                 .map(r => `<tr><td>${r.name}</td><td>${r.score} pts</td></tr>`).join('');
 
-            const keys = ["Found", "fell", "were", "found", "rains"];
-            document.getElementById('correct-answers-list').innerHTML = 
-                keys.map((k, i) => `<li>Q${i+1}: ${k}</li>`).join('');
+            // NUEVAS RESPUESTAS ACTUALIZADAS (Presente Simple y Sustantivos)
+            const keys = [
+                "shares (Present Simple 3rd person)",
+                "don't know (Present Simple Negative)",
+                "much (Uncountable noun 'love')",
+                "a (Countable noun 'girl')",
+                "many (Countable noun 'secrets')"
+            ];
 
+            document.getElementById('correct-answers-list').innerHTML = 
+                keys.map((k, i) => `<li><strong>#${i+1}:</strong> ${k}</li>`).join('');
+
+            // Gráfico
             if(results.length > 0) {
                 new Chart(document.getElementById('resultsChart').getContext('2d'), {
                     type: 'bar',
                     data: {
                         labels: results.map(r => r.name),
-                        datasets: [{ label: 'Points', data: results.map(r => r.score), backgroundColor: '#38bdf8' }]
+                        datasets: [{ 
+                            label: 'Points', 
+                            data: results.map(r => r.score), 
+                            backgroundColor: '#38bdf8' 
+                        }]
                     }
                 });
             }
         };
+
+        function clearData() {
+            if(confirm("Delete all scores?")) {
+                localStorage.removeItem('perfectGame');
+                location.reload();
+            }
+        }
     </script>
 </body>
 </html>
