@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Perfect Grammar Challenge | Ed Sheeran</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <section id="auth-screen" class="screen active">
+            <div class="glass-card">
+                <div class="badge">English Practice</div>
+                <h1>Perfect</h1>
+                <p>Grammar Quiz by Alejandro</p>
+                <input type="text" id="username" placeholder="Your name / Tu nombre" autocomplete="off">
+                <button class="btn-primary" onclick="showInstructions()">Next / Siguiente</button>
+                <div class="admin-container">
+                    <button type="button" onclick="handleAdminLogin()" class="btn-admin-solid">Admin Access 🔐</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="instructions-screen" class="screen">
+            <div class="glass-card">
+                <h2>Instructions / Instrucciones</h2>
+                <ul class="instr-list">
+                    <li><strong>EN:</strong> 10 seconds per question. Quick answers = More points!</li>
+                    <li><strong>ES:</strong> 10 segundos por pregunta. ¡Respuestas rápidas = Más puntos!</li>
+                    <li><strong>EN:</strong> Focus on Past Participles and Conditionals.</li>
+                    <li><strong>ES:</strong> Enfocate en Participios Pasados y Condicionales.</li>
+                </ul>
+                <button class="btn-primary" onclick="startGame()">START / EMPEZAR</button>
+            </div>
+        </section>
+
+        <section id="game-screen" class="screen">
+            <div class="game-header">
+                <div class="timer-container">
+                    <svg class="timer-svg" viewBox="0 0 40 40">
+                        <circle class="timer-bg" cx="20" cy="20" r="18"></circle>
+                        <circle class="timer-progress" id="timer-circle" cx="20" cy="20" r="18"></circle>
+                    </svg>
+                    <span id="timer-text">10</span>
+                </div>
+                <div class="stats">
+                    <span id="score-display">0 pts</span>
+                </div>
+            </div>
+            <div class="question-container">
+                <h2 id="question-text"></h2>
+                <div id="options-grid" class="options-grid"></div>
+            </div>
+        </section>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body style="overflow-y: auto; height: auto; padding: 20px;">
+    <div class="app-container" style="max-width: 800px;">
+        <div class="glass-card wide">
+            <h1>Class Statistics 📊</h1>
+            <canvas id="resultsChart" style="max-height: 250px; margin-bottom: 20px;"></canvas>
+            <div class="admin-grid">
+                <div class="table-scroll">
+                    <h3>Top Students</h3>
+                    <table>
+                        <thead><tr><th>Student</th><th>Score</th></tr></thead>
+                        <tbody id="table-body"></tbody>
+                    </table>
+                </div>
+                <div class="answers-review">
+                    <h3>Correct Keys 🔑</h3>
+                    <ul id="correct-answers-list"></ul>
+                </div>
+            </div>
+            <button class="btn-primary" onclick="window.location.href='index.html'">Back to Game</button>
+            <button class="btn-danger" onclick="localStorage.removeItem('perfectGame'); location.reload();" style="margin-top:10px; background:#ef4444;">Reset All Data</button>
+        </div>
+    </div>
+    <script>
+        window.onload = () => {
+            const results = JSON.parse(localStorage.getItem('perfectGame')) || [];
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = results.sort((a,b) => b.score - a.score)
+                .map(r => `<tr><td>${r.name}</td><td>${r.score} pts</td></tr>`).join('');
+
+            const keys = ["Found", "fell", "were", "found", "rains"];
+            document.getElementById('correct-answers-list').innerHTML = 
+                keys.map((k, i) => `<li>Q${i+1}: ${k}</li>`).join('');
+
+            if(results.length > 0) {
+                new Chart(document.getElementById('resultsChart').getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: results.map(r => r.name),
+                        datasets: [{ label: 'Points', data: results.map(r => r.score), backgroundColor: '#38bdf8' }]
+                    }
+                });
+            }
+        };
+    </script>
+</body>
+</html>
