@@ -1,9 +1,34 @@
 const questions = [
-    { q: "I ______ a love for me (Find)", options: ["Find", "Found", "Finded", "Finding"], correct: "Found" },
-    { q: "We were just kids when we ______ in love.", options: ["fall", "fell", "fallen", "felled"], correct: "fell" },
-    { q: "If I ______ (be) you, I would stay. (2nd Conditional)", options: ["am", "was", "were", "been"], correct: "were" },
-    { q: "I have ______ (found) a girl, beautiful and sweet.", options: ["find", "found", "finded", "founden"], correct: "found" },
-    { q: "If it ______ (rain) tonight, I will stay home. (1st Conditional)", options: ["rain", "rains", "rained", "raining"], correct: "rains" }
+    { 
+        q: "She ______ (share) my dreams in the song.", 
+        options: ["share", "shares", "sharing", "shared"], 
+        correct: "shares",
+        why: "Present Simple: Usamos la terminación 'S' porque 'She' es tercera persona del singular."
+    },
+    { 
+        q: "We ______ (not / know) we were just kids.", 
+        options: ["don't know", "doesn't know", "not know", "no know"], 
+        correct: "don't know",
+        why: "Present Simple Negative: Para 'We' usamos el auxiliar 'don't'."
+    },
+    { 
+        q: "Does Ed Sheeran have ______ (much/many) love to give?", 
+        options: ["much", "many", "a few", "any"], 
+        correct: "much",
+        why: "Uncountable: 'Love' es un sentimiento abstracto, por lo tanto es incontable y usamos 'much'."
+    },
+    { 
+        q: "I found ______ girl, beautiful and sweet.", 
+        options: ["a", "an", "some", "any"], 
+        correct: "a",
+        why: "Countable: 'Girl' es contable singular y empieza con consonante, por eso usamos 'a'."
+    },
+    { 
+        q: "How ______ (much/many) secrets do they share?", 
+        options: ["much", "many", "any", "a little"], 
+        correct: "many",
+        why: "Countable: 'Secrets' está en plural y se puede contar, por eso usamos 'many'."
+    }
 ];
 
 let currentIndex = 0;
@@ -12,19 +37,34 @@ let userName = "";
 let timer;
 let timeLeft = 10;
 
-// LOGIN ADMIN
 function handleAdminLogin() {
-    const pass = prompt("Enter Admin Password / Contraseña:");
+    const pass = prompt("Enter Admin Password:");
     if (pass === "Ale333") {
         window.location.href = 'admin.htm';
     } else {
-        alert("Incorrect Password! / ¡Contraseña Incorrecta!");
+        alert("Incorrect Password!");
     }
 }
 
 function showInstructions() {
     userName = document.getElementById('username').value.trim();
-    if (!userName) return alert("Please enter your name");
+    
+    // 1. Validar que el campo no esté vacío
+    if (!userName) {
+        return alert("Please enter your name / Por favor ingresa tu nombre");
+    }
+
+    // 2. Obtener los resultados existentes del LocalStorage
+    let results = JSON.parse(localStorage.getItem('perfectGame')) || [];
+
+    // 3. Revisar si el nombre ya existe (ignorando mayúsculas/minúsculas)
+    const nameExists = results.some(player => player.name.toLowerCase() === userName.toLowerCase());
+
+    if (nameExists) {
+        return alert("This name is already taken. Please use a different name or add a number. / Este nombre ya está en uso. Por favor usa otro o añade un número.");
+    }
+
+    // Si todo está bien, pasar a la pantalla de instrucciones
     document.getElementById('auth-screen').classList.remove('active');
     document.getElementById('instructions-screen').classList.add('active');
 }
@@ -70,22 +110,42 @@ function updateTimerUI() {
 
 function handleAnswer(choice) {
     clearInterval(timer);
-    if (choice === questions[currentIndex].correct) {
-        score += (timeLeft * 10) + 10; 
+    const q = questions[currentIndex];
+    const grid = document.getElementById('options-grid');
+    let pointsGained = 0;
+    let isCorrect = (choice === q.correct);
+
+    if (isCorrect) {
+        pointsGained = (timeLeft * 10) + 10;
+        score += pointsGained;
     }
-    currentIndex++;
+
+    // Bloquear botones para mostrar el feedback
+    grid.innerHTML = `
+        <div class="feedback-card ${isCorrect ? 'correct' : 'wrong'}">
+            <h3>${isCorrect ? '¡Correcto! ✅' : 'Incorrecto ❌'}</h3>
+            <p>Ganaste: ${pointsGained} pts</p>
+            <small>${q.why}</small>
+            <p style="font-size: 0.8rem; margin-top: 10px;">Next question in 3 seconds...</p>
+        </div>
+    `;
+
     document.getElementById('score-display').innerText = `${score} pts`;
-    if (currentIndex < questions.length) {
-        setTimeout(loadQuestion, 500);
-    } else {
-        finishGame();
-    }
+
+    currentIndex++;
+    setTimeout(() => {
+        if (currentIndex < questions.length) {
+            loadQuestion();
+        } else {
+            finishGame();
+        }
+    }, 3500); // 3.5 segundos para leer el feedback
 }
 
 function finishGame() {
     let results = JSON.parse(localStorage.getItem('perfectGame')) || [];
     results.push({ name: userName, score: score });
     localStorage.setItem('perfectGame', JSON.stringify(results));
-    alert(`GAME OVER / JUEGO TERMINADO\nName: ${userName}\nFinal Score: ${score}`);
+    alert(`JUEGO TERMINADO\n${userName}, tu puntuación final es: ${score}`);
     location.reload();
 }
